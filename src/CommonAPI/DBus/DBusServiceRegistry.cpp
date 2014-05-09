@@ -738,8 +738,7 @@ bool DBusServiceRegistry::introspectDBusObjectPath(const std::string& dbusServic
 
         dbusConnection->sendDBusMessageWithReplyAsync(
             dbusMessageCall,
-            DBusProxyAsyncCallbackHandler<std::string>::create(instrospectAsyncCallback),
-            2000);
+            DBusProxyAsyncCallbackHandler<std::string>::create(instrospectAsyncCallback));
 
         isResolvingInProgress = true;
     }
