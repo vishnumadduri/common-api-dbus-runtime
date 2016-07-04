@@ -11,7 +11,8 @@
 #define COMMONAPI_DBUS_PROXYMANAGER_HPP_
 
 #include <functional>
-#include <future>
+#define BOOST_THREAD_PROVIDES_FUTURE
+#include <boost/thread/future.hpp>
 #include <string>
 #include <vector>
 
@@ -35,13 +36,13 @@ public:
 	COMMONAPI_EXPORT const ConnectionId_t &getConnectionId() const;
 
 	COMMONAPI_EXPORT virtual void getAvailableInstances(CommonAPI::CallStatus &, std::vector<std::string> &_instances);
-	COMMONAPI_EXPORT virtual std::future<CallStatus> getAvailableInstancesAsync(GetAvailableInstancesCallback _callback);
+	COMMONAPI_EXPORT virtual boost::future<CallStatus> getAvailableInstancesAsync(GetAvailableInstancesCallback _callback);
 
 	COMMONAPI_EXPORT virtual void getInstanceAvailabilityStatus(const std::string &_address,
                                                CallStatus &_callStatus,
                                                AvailabilityStatus &_availabilityStatus);
 
-	COMMONAPI_EXPORT  virtual std::future<CallStatus> getInstanceAvailabilityStatusAsync(
+	COMMONAPI_EXPORT  virtual boost::future<CallStatus> getInstanceAvailabilityStatusAsync(
     									const std::string&,
                                         GetInstanceAvailabilityStatusCallback callback);
 
@@ -54,7 +55,7 @@ private:
 
 	COMMONAPI_EXPORT void instanceAliveAsyncCallback(const AvailabilityStatus &_alive,
                                     GetInstanceAvailabilityStatusCallback &_call,
-									std::shared_ptr<std::promise<CallStatus>> &_status);
+									std::shared_ptr<boost::promise<CallStatus>> &_status);
 
 	COMMONAPI_EXPORT void translateCommonApiAddresses(const DBusObjectManagerStub::DBusObjectPathAndInterfacesDict &_dict,
                                      std::vector<std::string> &_instances);

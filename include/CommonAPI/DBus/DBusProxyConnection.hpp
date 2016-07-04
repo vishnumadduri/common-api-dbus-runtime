@@ -12,7 +12,8 @@
 
 #include <cstdint>
 #include <functional>
-#include <future>
+#define BOOST_THREAD_PROVIDES_FUTURE
+#include <boost/thread/future.hpp>
 #include <memory>
 #include <set>
 #include <tuple>
@@ -43,7 +44,7 @@ class DBusProxyConnection {
     class DBusMessageReplyAsyncHandler {
      public:
        virtual ~DBusMessageReplyAsyncHandler() {}
-       virtual std::future<CallStatus> getFuture() = 0;
+       virtual boost::future<CallStatus> getFuture() = 0;
        virtual void onDBusMessageReply(const CallStatus&, const DBusMessage&) = 0;
     };
 
@@ -69,7 +70,7 @@ class DBusProxyConnection {
 
     virtual bool sendDBusMessage(const DBusMessage& dbusMessage) const = 0;
 
-    virtual std::future<CallStatus> sendDBusMessageWithReplyAsync(
+    virtual boost::future<CallStatus> sendDBusMessageWithReplyAsync(
             const DBusMessage& dbusMessage,
             std::unique_ptr<DBusMessageReplyAsyncHandler> dbusMessageReplyAsyncHandler,
 			const CommonAPI::CallInfo *_info) const = 0;

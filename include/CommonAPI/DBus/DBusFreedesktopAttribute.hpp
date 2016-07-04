@@ -53,7 +53,7 @@ public:
         _value = deployedValue.getValue().template get<ValueType>();
     }
 
-    std::future<CallStatus> getValueAsync(AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
+    boost::future<CallStatus> getValueAsync(AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
         CommonAPI::Deployable<Variant<ValueType>, VariantDeployment<>> deployedValue(&freedesktopVariant);
         return DBusProxyHelper<
         			DBusSerializableArguments<
@@ -119,7 +119,7 @@ public:
         _value = deployedValue.getValue().template get<ValueType>();
     }
 
-    std::future<CommonAPI::CallStatus> getValueAsync(AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
+    boost::future<CommonAPI::CallStatus> getValueAsync(AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
         CommonAPI::Deployable<ValueType, VariantDeployment<>> deployedValue(&freedesktopVariant);
         return DBusProxyHelper<
         			DBusSerializableArguments<
@@ -181,7 +181,7 @@ class DBusFreedesktopAttribute
         _response = _request;
     }
 
-    std::future<CommonAPI::CallStatus> setValueAsync(const ValueType &_request, AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
+    boost::future<CommonAPI::CallStatus> setValueAsync(const ValueType &_request, AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
     	CommonAPI::Deployable<Variant<ValueType>, VariantDeployment<>> deployedVariant(_request, &freedesktopVariant);
         return DBusProxyHelper<
         			DBusSerializableArguments<
@@ -237,7 +237,7 @@ class DBusFreedesktopUnionAttribute
         _response = _request;
     }
 
-    std::future<CallStatus> setValueAsync(const ValueType &_request, AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
+    boost::future<CallStatus> setValueAsync(const ValueType &_request, AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
     	CommonAPI::Deployable<ValueType, VariantDeployment<>> deployedVariant(_request, &freedesktopVariant);
         return DBusProxyHelper<
         			DBusSerializableArguments<

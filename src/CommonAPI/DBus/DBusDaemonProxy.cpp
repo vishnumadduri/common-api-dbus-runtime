@@ -21,11 +21,11 @@ void StaticInterfaceVersionAttribute::getValue(CallStatus &_status, Version &_ve
     _status = CallStatus::SUCCESS;
 }
 
-std::future<CallStatus> StaticInterfaceVersionAttribute::getValueAsync(AttributeAsyncCallback attributeAsyncCallback,
+boost::future<CallStatus> StaticInterfaceVersionAttribute::getValueAsync(AttributeAsyncCallback attributeAsyncCallback,
 																	   const CommonAPI::CallInfo *_info) {
     attributeAsyncCallback(CallStatus::SUCCESS, version_);
 
-    std::promise<CallStatus> versionPromise;
+    boost::promise<CallStatus> versionPromise;
     versionPromise.set_value(CallStatus::SUCCESS);
 
     return versionPromise.get_future();
@@ -91,7 +91,7 @@ void DBusDaemonProxy::listNames(CommonAPI::CallStatus& callStatus, std::vector<s
     callStatus = CallStatus::SUCCESS;
 }
 
-std::future<CallStatus> DBusDaemonProxy::listNamesAsync(ListNamesAsyncCallback listNamesAsyncCallback) const {
+boost::future<CallStatus> DBusDaemonProxy::listNamesAsync(ListNamesAsyncCallback listNamesAsyncCallback) const {
     DBusMessage dbusMessage = createMethodCall("ListNames", "");
     return getDBusConnection()->sendDBusMessageWithReplyAsync(
                     dbusMessage,
@@ -129,13 +129,13 @@ void DBusDaemonProxy::nameHasOwner(const std::string& busName, CommonAPI::CallSt
     callStatus = CallStatus::SUCCESS;
 }
 
-std::future<CallStatus> DBusDaemonProxy::nameHasOwnerAsync(const std::string& busName, NameHasOwnerAsyncCallback nameHasOwnerAsyncCallback) const {
+boost::future<CallStatus> DBusDaemonProxy::nameHasOwnerAsync(const std::string& busName, NameHasOwnerAsyncCallback nameHasOwnerAsyncCallback) const {
     DBusMessage dbusMessage = createMethodCall("NameHasOwner", "s");
 
     DBusOutputStream outputStream(dbusMessage);
     const bool success = DBusSerializableArguments<std::string>::serialize(outputStream, busName);
     if (!success) {
-        std::promise<CallStatus> promise;
+        boost::promise<CallStatus> promise;
         promise.set_value(CallStatus::OUT_OF_MEMORY);
         return promise.get_future();
     }
@@ -147,7 +147,7 @@ std::future<CallStatus> DBusDaemonProxy::nameHasOwnerAsync(const std::string& bu
 					&daemonProxyInfo);
 }
 
-std::future<CallStatus> DBusDaemonProxy::getManagedObjectsAsync(const std::string& forDBusServiceName, GetManagedObjectsAsyncCallback callback) const {
+boost::future<CallStatus> DBusDaemonProxy::getManagedObjectsAsync(const std::string& forDBusServiceName, GetManagedObjectsAsyncCallback callback) const {
     static DBusAddress address(forDBusServiceName, "/", "org.freedesktop.DBus.ObjectManager");
     auto dbusMethodCallMessage = DBusMessage::createMethodCall(address, "GetManagedObjects", "");
 
@@ -159,13 +159,13 @@ std::future<CallStatus> DBusDaemonProxy::getManagedObjectsAsync(const std::strin
 					&daemonProxyInfo);
 }
 
-std::future<CallStatus> DBusDaemonProxy::getNameOwnerAsync(const std::string& busName, GetNameOwnerAsyncCallback getNameOwnerAsyncCallback) const {
+boost::future<CallStatus> DBusDaemonProxy::getNameOwnerAsync(const std::string& busName, GetNameOwnerAsyncCallback getNameOwnerAsyncCallback) const {
     DBusMessage dbusMessage = createMethodCall("GetNameOwner", "s");
 
     DBusOutputStream outputStream(dbusMessage);
     const bool success = DBusSerializableArguments<std::string>::serialize(outputStream, busName);
     if (!success) {
-        std::promise<CallStatus> promise;
+        boost::promise<CallStatus> promise;
         promise.set_value(CallStatus::OUT_OF_MEMORY);
         return promise.get_future();
     }

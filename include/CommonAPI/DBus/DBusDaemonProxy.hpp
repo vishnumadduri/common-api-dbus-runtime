@@ -28,7 +28,7 @@ class StaticInterfaceVersionAttribute: public InterfaceVersionAttribute {
     StaticInterfaceVersionAttribute(const uint32_t& majorValue, const uint32_t& minorValue);
 
     void getValue(CommonAPI::CallStatus& callStatus, Version &_version, const CommonAPI::CallInfo *_info) const;
-    std::future<CommonAPI::CallStatus> getValueAsync(AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info);
+    boost::future<CommonAPI::CallStatus> getValueAsync(AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info);
 
  private:
     Version version_;
@@ -64,13 +64,13 @@ class DBusDaemonProxy : public DBusProxyBase {
 	COMMONAPI_EXPORT NameOwnerChangedEvent& getNameOwnerChangedEvent();
 
 	COMMONAPI_EXPORT void listNames(CommonAPI::CallStatus& callStatus, std::vector<std::string>& busNames) const;
-	COMMONAPI_EXPORT std::future<CallStatus> listNamesAsync(ListNamesAsyncCallback listNamesAsyncCallback) const;
+	COMMONAPI_EXPORT boost::future<CallStatus> listNamesAsync(ListNamesAsyncCallback listNamesAsyncCallback) const;
 
 	COMMONAPI_EXPORT void nameHasOwner(const std::string& busName, CommonAPI::CallStatus& callStatus, bool& hasOwner) const;
-	COMMONAPI_EXPORT std::future<CallStatus> nameHasOwnerAsync(const std::string& busName,
+	COMMONAPI_EXPORT boost::future<CallStatus> nameHasOwnerAsync(const std::string& busName,
                                               NameHasOwnerAsyncCallback nameHasOwnerAsyncCallback) const;
 
-	COMMONAPI_EXPORT std::future<CallStatus> getManagedObjectsAsync(const std::string& forDBusServiceName,
+	COMMONAPI_EXPORT boost::future<CallStatus> getManagedObjectsAsync(const std::string& forDBusServiceName,
                                                    GetManagedObjectsAsyncCallback) const;
 
     /**
@@ -81,7 +81,7 @@ class DBusDaemonProxy : public DBusProxyBase {
      *
      * @return CallStatus::REMOTE_ERROR if the name is unknown, otherwise CallStatus::SUCCESS and the uniq name of the owner
      */
-    std::future<CallStatus> getNameOwnerAsync(const std::string& busName, GetNameOwnerAsyncCallback getNameOwnerAsyncCallback) const;
+    boost::future<CallStatus> getNameOwnerAsync(const std::string& busName, GetNameOwnerAsyncCallback getNameOwnerAsyncCallback) const;
 
  private:
     DBusEvent<NameOwnerChangedEvent, std::string, std::string, std::string> nameOwnerChangedEvent_;

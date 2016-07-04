@@ -72,7 +72,7 @@ DBusProxyManager::getAvailableInstances(
     }
 }
 
-std::future<CallStatus>
+boost::future<CallStatus>
 DBusProxyManager::getAvailableInstancesAsync(
 		GetAvailableInstancesCallback _callback) {
     return CommonAPI::DBus::DBusProxyHelper<
@@ -121,19 +121,19 @@ void
 DBusProxyManager::instanceAliveAsyncCallback(
 		const AvailabilityStatus &_alive,
 		GetInstanceAvailabilityStatusCallback &_call,
-		std::shared_ptr<std::promise<CallStatus> > &_status) {
+		std::shared_ptr<boost::promise<CallStatus> > &_status) {
     _call(CallStatus::SUCCESS, _alive);
     _status->set_value(CallStatus::SUCCESS);
 }
 
-std::future<CallStatus>
+boost::future<CallStatus>
 DBusProxyManager::getInstanceAvailabilityStatusAsync(
 		const std::string &_instance,
         GetInstanceAvailabilityStatusCallback _callback) {
 
 	CommonAPI::Address itsAddress("local", interfaceId_, _instance);
 
-    std::shared_ptr<std::promise<CallStatus> > promise = std::make_shared<std::promise<CallStatus>>();
+    std::shared_ptr<boost::promise<CallStatus> > promise = std::make_shared<boost::promise<CallStatus>>();
     registry_->subscribeAvailabilityListener(
                     itsAddress.getAddress(),
                     std::bind(&DBusProxyManager::instanceAliveAsyncCallback,

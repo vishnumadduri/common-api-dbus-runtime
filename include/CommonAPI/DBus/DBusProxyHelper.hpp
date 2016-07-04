@@ -11,7 +11,8 @@
 #define COMMONAPI_DBUS_DBUSPROXYHELPER_HPP_
 
 #include <functional>
-#include <future>
+#define BOOST_THREAD_PROVIDES_FUTURE
+#include <boost/thread/future.hpp>
 #include <memory>
 #include <string>
 
@@ -151,7 +152,7 @@ struct DBusProxyHelper<_In<DBusInputStream, DBusOutputStream, _InArgs...>,
     }
 
     template <typename _DBusProxy = DBusProxy, typename _AsyncCallback>
-    static std::future<CallStatus> callMethodAsync(
+    static boost::future<CallStatus> callMethodAsync(
                     const _DBusProxy &_proxy,
                     DBusMessage &_message,
 					const CommonAPI::CallInfo *_info,
@@ -164,7 +165,7 @@ struct DBusProxyHelper<_In<DBusInputStream, DBusOutputStream, _InArgs...>,
             						_InArgs...
             					 >::serialize(output, _in...);
             if (!success) {
-                std::promise<CallStatus> promise;
+                boost::promise<CallStatus> promise;
                 promise.set_value(CallStatus::OUT_OF_MEMORY);
                 return promise.get_future();
             }
@@ -180,7 +181,7 @@ struct DBusProxyHelper<_In<DBusInputStream, DBusOutputStream, _InArgs...>,
     }
 
     template <typename _DBusProxy = DBusProxy, typename _AsyncCallback>
-    static std::future<CallStatus> callMethodAsync(
+    static boost::future<CallStatus> callMethodAsync(
                         const _DBusProxy &_proxy,
                         const DBusAddress &_address,
                         const std::string &_method,
@@ -196,14 +197,14 @@ struct DBusProxyHelper<_In<DBusInputStream, DBusOutputStream, _InArgs...>,
             CallStatus status = CallStatus::NOT_AVAILABLE;
             callCallbackOnNotAvailable(_callback, typename make_sequence<sizeof...(_OutArgs)>::type(), _out);
 
-            std::promise<CallStatus> promise;
+            boost::promise<CallStatus> promise;
             promise.set_value(status);
             return promise.get_future();
         }
     }
 
     template <typename _DBusProxy = DBusProxy, typename _AsyncCallback>
-    static std::future<CallStatus> callMethodAsync(
+    static boost::future<CallStatus> callMethodAsync(
                 const _DBusProxy &_proxy,
                 const std::string &_interface,
                 const std::string &_method,
@@ -222,7 +223,7 @@ struct DBusProxyHelper<_In<DBusInputStream, DBusOutputStream, _InArgs...>,
     }
 
     template <typename _DBusProxy = DBusProxy, typename _AsyncCallback>
-    static std::future<CallStatus> callMethodAsync(
+    static boost::future<CallStatus> callMethodAsync(
                     const _DBusProxy &_proxy,
                     const std::string &_method,
                     const std::string &_signature,
@@ -238,7 +239,7 @@ struct DBusProxyHelper<_In<DBusInputStream, DBusOutputStream, _InArgs...>,
             	_callback, typename make_sequence<sizeof...(_OutArgs)>::type(), _out);
 
             CallStatus status = CallStatus::NOT_AVAILABLE;
-            std::promise<CallStatus> promise;
+            boost::promise<CallStatus> promise;
             promise.set_value(status);
             return promise.get_future();
     	}

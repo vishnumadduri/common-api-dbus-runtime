@@ -6,7 +6,8 @@
 #include <algorithm>
 #include <cassert>
 #include <chrono>
-#include <future>
+#define BOOST_THREAD_PROVIDES_FUTURE
+#include <boost/thread/future.hpp>
 #include <sstream>
 #include <thread>
 
@@ -311,10 +312,10 @@ bool DBusConnection::connect(DBusError &dbusError, bool startDispatchThread) {
 
     stopDispatching_ = !startDispatchThread;
     if (startDispatchThread) {
-    	dispatchThread_ = new std::thread(std::bind(&DBusConnection::dispatch, this->shared_from_this()));
+    	dispatchThread_ = new boost::thread(std::bind(&DBusConnection::dispatch, this->shared_from_this()));
     }
 
-    enforcerThread_ = std::make_shared<std::thread>(
+    enforcerThread_ = std::make_shared<boost::thread>(
     					std::bind(&DBusConnection::enforceAsynchronousTimeouts, shared_from_this()));
 
     dbusConnectionStatusEvent_.notifyListeners(AvailabilityStatus::AVAILABLE);
@@ -341,7 +342,7 @@ void DBusConnection::disconnect() {
         if(dispatchThread_) {
             //It is possible for the disconnect to be called from within a callback, i.e. from within the dispatch
             //thread. Self-join is prevented this way.
-            if (dispatchThread_->joinable() && std::this_thread::get_id() != dispatchThread_->get_id()) {
+            if (dispatchThread_->joinable() && boost::this_thread::get_id() != dispatchThread_->get_id()) {
                 dispatchThread_->join();
             } else {
                 dispatchThread_->detach();
@@ -558,7 +559,7 @@ void DBusConnection::enforceAsynchronousTimeouts() const {
     }
 }
 
-std::future<CallStatus> DBusConnection::sendDBusMessageWithReplyAsync(
+boost::future<CallStatus> DBusConnection::sendDBusMessageWithReplyAsync(
         const DBusMessage& dbusMessage,
         std::unique_ptr<DBusMessageReplyAsyncHandler> dbusMessageReplyAsyncHandler,
         const CommonAPI::CallInfo *_info) const {
@@ -619,7 +620,7 @@ std::future<CallStatus> DBusConnection::sendDBusMessageWithReplyAsync(
         enforceTimeoutCondition_.notify_all();
     }
 
-    std::future<CallStatus> result = replyAsyncHandler->getFuture();
+    boost::future<CallStatus> result = replyAsyncHandler->getFuture();
 
     resumeDispatching();
 

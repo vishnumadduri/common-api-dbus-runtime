@@ -99,6 +99,7 @@ message(STATUS "CMAKE_FIND_ROOT_PATH: ${CMAKE_FIND_ROOT_PATH}")
 
 FIND_PACKAGE(PkgConfig)
 FIND_PACKAGE(Threads REQUIRED)
+FIND_PACKAGE(Boost REQUIRED)
 if ("${USE_INSTALLED_COMMONAPI}" STREQUAL "ON")
     FIND_PACKAGE(CommonAPI 3.1.3 REQUIRED CONFIG NO_CMAKE_PACKAGE_REGISTRY)
 else()
@@ -146,6 +147,7 @@ include_directories(
     include
     ${COMMONAPI_INCLUDE_DIRS}
     ${DBus_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
 )
 
 if ("${USE_INSTALLED_DBUS}" STREQUAL "OFF")
@@ -168,9 +170,9 @@ add_library(CommonAPI-DBus ${CAPIDB_SRCS} ${PUGIXML_SRCS} ${MMHASH_SRCS})
 
 if(MSVC)
 #workaround since pkg-config on windows doesn't work easily and windows needs ws2_32 for the mainloop
-target_link_libraries(CommonAPI-DBus CommonAPI ws2_32 debug ${DBus_BUILD_DIR}/bin/Debug/dbus-1d.lib optimized ${DBus_BUILD_DIR}/bin/Release/dbus-1.lib)
+target_link_libraries(CommonAPI-DBus CommonAPI ws2_32 debug ${DBus_BUILD_DIR}/bin/Debug/dbus-1d.lib optimized ${DBus_BUILD_DIR}/bin/Release/dbus-1.lib -lboost_thread -lboost_chrono)
 else()
-target_link_libraries(CommonAPI-DBus CommonAPI dbus-1)
+target_link_libraries(CommonAPI-DBus CommonAPI dbus-1 -lboost_thread -lboost_chrono)
 endif()
 
 set_target_properties(CommonAPI-DBus PROPERTIES VERSION ${LIBCOMMONAPI_DBUS_MAJOR_VERSION}.${LIBCOMMONAPI_DBUS_MINOR_VERSION}.${LIBCOMMONAPI_DBUS_PATCH_VERSION} SOVERSION ${LIBCOMMONAPI_DBUS_MAJOR_VERSION} LINKER_LANGUAGE C)

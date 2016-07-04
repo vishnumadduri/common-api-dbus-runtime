@@ -4,7 +4,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include <iterator>
-
+#include <boost/chrono.hpp>
 #include <CommonAPI/Logger.hpp>
 #include <CommonAPI/DBus/DBusAddressTranslator.hpp>
 #include <CommonAPI/DBus/DBusDaemonProxy.hpp>
@@ -100,7 +100,7 @@ DBusServiceRegistry::subscribeAvailabilityListener(
 	DBusAddress dbusAddress;
 	translator_->translate(_address, dbusAddress);
 
-    if (notificationThread_ == std::this_thread::get_id()) {
+    if (notificationThread_ == boost::this_thread::get_id()) {
     	COMMONAPI_ERROR(
     		"You must not build proxies in callbacks of ProxyStatusEvent.",
             " Please refer to the documentation for suggestions how to avoid this.");
@@ -144,9 +144,9 @@ DBusServiceRegistry::subscribeAvailabilityListener(
 
     // LB TODO: check this as it looks STRANGE!!!
     if (availabilityStatus != AvailabilityStatus::UNKNOWN) {
-        notificationThread_ = std::this_thread::get_id();
+        notificationThread_ = boost::this_thread::get_id();
         serviceListener(availabilityStatus);
-        notificationThread_ = std::thread::id();
+        notificationThread_ = boost::thread::id();
     }
 
     dbusInterfaceNameListenersRecord.listenerList.push_front(std::move(serviceListener));
@@ -204,7 +204,7 @@ DBusServiceRegistry::unsubscribeAvailabilityListener(
 bool DBusServiceRegistry::isServiceInstanceAlive(const std::string& dbusInterfaceName,
                                                  const std::string& dbusServiceName,
                                                  const std::string& dbusObjectPath) {
-    std::chrono::milliseconds timeout(1000);
+    boost::chrono::milliseconds timeout(1000);
     bool uniqueNameFound = false;
 
     DBusUniqueNameRecord* dbusUniqueNameRecord = NULL;
@@ -234,7 +234,7 @@ bool DBusServiceRegistry::isServiceInstanceAlive(const std::string& dbusInterfac
 
         dbusServicesMutex_.unlock();
 
-        std::shared_future<DBusRecordState> futureNameResolved = insertedDbusServiceListenerRecord.first->second.futureOnResolve;
+        boost::shared_future<DBusRecordState> futureNameResolved = insertedDbusServiceListenerRecord.first->second.futureOnResolve;
         futureNameResolved.wait_for(timeout);
 
         if(futureNameResolved.get() != DBusRecordState::RESOLVED) {
@@ -291,7 +291,7 @@ bool DBusServiceRegistry::isServiceInstanceAlive(const std::string& dbusInterfac
 
         dbusObjectPathCache = &(dbusObjectPathCacheIterator->second);
 
-        std::future<DBusRecordState> futureObjectPathResolved = dbusObjectPathCache->promiseOnResolve.get_future();
+        boost::future<DBusRecordState> futureObjectPathResolved = dbusObjectPathCache->promiseOnResolve.get_future();
         dbusServicesMutex_.unlock();
 
         introspectDBusObjectPath(uniqueName, dbusObjectPath);
@@ -430,7 +430,7 @@ void DBusServiceRegistry::getAvailableServiceInstancesAsync(CommonAPI::Factory::
                                                             const std::string &_domain) {
     //Necessary as service discovery might need some time, but the async version of "getAvailableServiceInstances"
     //shall return without delay.
-    std::thread(
+    boost::thread(
             [this, _cbk, _interface, _domain](std::shared_ptr<DBusServiceRegistry> selfRef) {
                 auto instances = getAvailableServiceInstances(_interface, _domain);
                 _cbk(instances);
@@ -964,7 +964,7 @@ void DBusServiceRegistry::notifyDBusServiceListeners(const DBusUniqueNameRecord&
                                                      const std::string& dbusObjectPath,
                                                      const std::unordered_set<std::string>& dbusInterfaceNames,
                                                      const DBusRecordState& dbusInterfaceNamesState) {
-    notificationThread_ = std::this_thread::get_id();
+    notificationThread_ = boost::this_thread::get_id();
 
     for (const std::string& dbusServiceName : dbusUniqueNameRecord.ownedBusNames) {
         auto dbusServiceListenersIterator = dbusServiceListenersMap.find(dbusServiceName);
@@ -999,7 +999,7 @@ void DBusServiceRegistry::notifyDBusServiceListeners(const DBusUniqueNameRecord&
         }
     }
 
-    notificationThread_ = std::thread::id();
+    notificationThread_ = boost::thread::id();
 }
 
 void DBusServiceRegistry::notifyDBusObjectPathResolved(DBusInterfaceNameListenersMap& dbusInterfaceNameListenersMap,

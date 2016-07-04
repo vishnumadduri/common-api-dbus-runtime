@@ -11,7 +11,8 @@
 #define COMMONAPI_DBUS_DBUSINSTANCEAVAILABILITYSTATUSCHANGED_EVENT_HPP_
 
 #include <functional>
-#include <future>
+#define BOOST_THREAD_PROVIDES_FUTURE
+#include <boost/thread/future.hpp>
 #include <string>
 #include <vector>
 

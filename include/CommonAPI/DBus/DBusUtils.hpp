@@ -10,7 +10,8 @@
 #ifndef COMMONAPI_DBUS_DBUSUTILS_HPP_
 #define COMMONAPI_DBUS_DBUSUTILS_HPP_
 
-#include <future>
+#define BOOST_THREAD_PROVIDES_FUTURE
+#include <boost/thread/future.hpp>
 
 namespace CommonAPI {
 namespace DBus {
@@ -27,8 +28,8 @@ inline bool checkReady<bool>(bool& returnedValue) {
 }
 
 template<>
-inline bool checkReady<std::future_status>(std::future_status& returnedValue) {
-	return returnedValue == std::future_status::ready;
+inline bool checkReady<boost::future_status>(boost::future_status& returnedValue) {
+	return returnedValue == boost::future_status::ready;
 }
 
 } // namespace DBus

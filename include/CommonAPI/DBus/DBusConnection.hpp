@@ -79,7 +79,7 @@ public:
 
 	COMMONAPI_EXPORT bool sendDBusMessage(const DBusMessage& dbusMessage/*, uint32_t* allocatedSerial = NULL*/) const;
 
-	COMMONAPI_EXPORT std::future<CallStatus> sendDBusMessageWithReplyAsync(
+	COMMONAPI_EXPORT boost::future<CallStatus> sendDBusMessageWithReplyAsync(
             const DBusMessage& dbusMessage,
             std::unique_ptr<DBusMessageReplyAsyncHandler> dbusMessageReplyAsyncHandler,
 			const CommonAPI::CallInfo *_info) const;
@@ -140,7 +140,7 @@ public:
 	 COMMONAPI_EXPORT void suspendDispatching() const;
 	 COMMONAPI_EXPORT void resumeDispatching() const;
 
-    std::thread* dispatchThread_;
+    boost::thread* dispatchThread_;
     bool stopDispatching_;
 
     std::weak_ptr<MainLoopContext> mainLoopContext_;
@@ -257,7 +257,7 @@ public:
     mutable std::mutex enforceTimeoutMutex_;
     mutable std::condition_variable enforceTimeoutCondition_;
 
-    mutable std::shared_ptr<std::thread> enforcerThread_;
+    mutable std::shared_ptr<boost::thread> enforcerThread_;
     mutable std::mutex enforcerThreadMutex_;
     bool enforcerThreadCancelled_;
 };

@@ -12,7 +12,9 @@
 
 #include <algorithm>
 #include <condition_variable>
-#include <future>
+#define BOOST_THREAD_PROVIDES_FUTURE
+#include <boost/thread/thread.hpp>
+#include <boost/thread/future.hpp>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -135,8 +137,8 @@ class DBusServiceRegistry: public std::enable_shared_from_this<DBusServiceRegist
         DBusRecordState uniqueBusNameState;
 	std::string uniqueBusName;
 
-        std::promise<DBusRecordState> promiseOnResolve;
-        std::shared_future<DBusRecordState> futureOnResolve;
+        boost::promise<DBusRecordState> promiseOnResolve;
+        boost::shared_future<DBusRecordState> futureOnResolve;
         std::unique_lock<std::mutex>* mutexOnResolve;
 
         std::unordered_map<std::string, DBusInterfaceNameListenersMap> dbusObjectPathListenersMap;
@@ -162,7 +164,7 @@ class DBusServiceRegistry: public std::enable_shared_from_this<DBusServiceRegist
 
         size_t referenceCount;
         DBusRecordState state;
-        std::promise<DBusRecordState> promiseOnResolve;
+        boost::promise<DBusRecordState> promiseOnResolve;
 
         std::unordered_set<std::string> dbusInterfaceNamesCache;
     };
@@ -299,7 +301,7 @@ class DBusServiceRegistry: public std::enable_shared_from_this<DBusServiceRegist
         return dbusInterfaceName.find("org.freedesktop.DBus.") == 0;
     }
 
-    std::thread::id notificationThread_;
+    boost::thread::id notificationThread_;
 
 private:
     typedef std::map<std::shared_ptr<DBusProxyConnection>, std::shared_ptr<DBusServiceRegistry>> RegistryMap_t;

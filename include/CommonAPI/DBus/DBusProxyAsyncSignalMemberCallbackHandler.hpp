@@ -11,7 +11,8 @@
 #define COMMONAPI_DBUS_DBUSPROXYASYNCSIGNALMEMBERCALLBACKHANDLER_HPP_
 
 #include <functional>
-#include <future>
+#define BOOST_THREAD_PROVIDES_FUTURE
+#include <boost/thread/future.hpp>
 #include <memory>
 
 //#include <CommonAPI/DBus/DBusHelper.hpp>
@@ -40,7 +41,7 @@ class DBusProxyAsyncSignalMemberCallbackHandler: public DBusProxyConnection::DBu
 	}
     virtual ~DBusProxyAsyncSignalMemberCallbackHandler() {}
 
-    virtual std::future<CallStatus> getFuture() {
+    virtual boost::future<CallStatus> getFuture() {
         return promise_.get_future();
     }
 
@@ -56,7 +57,7 @@ class DBusProxyAsyncSignalMemberCallbackHandler: public DBusProxyConnection::DBu
         return callStatus;
     }
 
-    std::promise<CallStatus> promise_;
+    boost::promise<CallStatus> promise_;
     const FunctionType callback_;
     DBusProxyConnection::DBusSignalHandler* dbusSignalHandler_;
     const int tag_;

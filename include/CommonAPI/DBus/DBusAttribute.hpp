@@ -53,7 +53,7 @@ public:
         _value = deployedValue.getValue();
     }
 
-    std::future<CallStatus> getValueAsync(AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
+    boost::future<CallStatus> getValueAsync(AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
     	CommonAPI::Deployable<ValueType, _AttributeDepl> deployedValue(depl_);
         return DBusProxyHelper<
         			DBusSerializableArguments<>,
@@ -104,7 +104,7 @@ public:
     }
 
 
-    std::future<CallStatus> setValueAsync(const ValueType &_request, AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
+    boost::future<CallStatus> setValueAsync(const ValueType &_request, AttributeAsyncCallback _callback, const CommonAPI::CallInfo *_info) {
     	CommonAPI::Deployable<ValueType, _AttributeDepl> deployedRequest(_request, this->depl_);
     	CommonAPI::Deployable<ValueType, _AttributeDepl> deployedResponse(this->depl_);
     	return DBusProxyHelper<DBusSerializableArguments<CommonAPI::Deployable<ValueType, _AttributeDepl>>,
